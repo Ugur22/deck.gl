@@ -2,52 +2,32 @@
 import React, {Component} from 'react';
 import {render} from 'react-dom';
 import {StaticMap} from 'react-map-gl';
-import {PhongMaterial} from '@luma.gl/core';
-import {AmbientLight, PointLight, LightingEffect} from '@deck.gl/core';
-import {HexagonLayer} from '@deck.gl/aggregation-layers';
-import DeckGL from '@deck.gl/react';
+import DeckGL, {HexagonLayer} from 'deck.gl';
 
 // Set your mapbox token here
-const MAPBOX_TOKEN = process.env.MapboxAccessToken; // eslint-disable-line
+const MAPBOX_TOKEN = 'pk.eyJ1IjoidWd1cjIyIiwiYSI6ImNqc2N6azM5bTAxc240M3J4MXZ1bDVyNHMifQ.rI_KbRwW8MShCcPNLsB6zA' // eslint-disable-line
 
 // Source data CSV
 const DATA_URL =
-  'https://raw.githubusercontent.com/uber-common/deck.gl-data/master/examples/3d-heatmap/heatmap-data.csv'; // eslint-disable-line
-
-const ambientLight = new AmbientLight({
-  color: [255, 255, 255],
-  intensity: 1.0
-});
-
-const pointLight1 = new PointLight({
-  color: [255, 255, 255],
-  intensity: 0.8,
-  position: [-0.144528, 49.739968, 80000]
-});
-
-const pointLight2 = new PointLight({
-  color: [255, 255, 255],
-  intensity: 0.8,
-  position: [-3.807751, 54.104682, 8000]
-});
-
-const lightingEffect = new LightingEffect({ambientLight, pointLight1, pointLight2});
-
-const material = new PhongMaterial({
-  ambient: 0.64,
-  diffuse: 0.6,
-  shininess: 32,
-  specularColor: [51, 51, 51]
-});
-
+  'https://raw.githubusercontent.com/Ugur22/TamTamAssigment/master/data.csv'; // eslint-disable-line
+ 
 export const INITIAL_VIEW_STATE = {
-  longitude: -1.4157267858730052,
-  latitude: 52.232395363869415,
+  longitude:  4.728581,
+  latitude: 52.398437	,
   zoom: 6.6,
   minZoom: 5,
   maxZoom: 15,
   pitch: 40.5,
   bearing: -27.396674584323023
+};
+
+const LIGHT_SETTINGS = {
+  lightsPosition: [-0.144528, 49.739968, 8000, -3.807751, 54.104682, 8000],
+  ambientRatio: 0.4,
+  diffuseRatio: 0.6,
+  specularRatio: 0.2,
+  lightsStrength: [0.8, 0.0, 0.8, 0.0],
+  numberOfLights: 2
 };
 
 const colorRange = [
@@ -127,16 +107,16 @@ export class App extends Component {
         colorRange,
         coverage,
         data,
-        elevationRange: [0, 3000],
+        elevationRange: [0, 1000],
         elevationScale: this.state.elevationScale,
         extruded: true,
         getPosition: d => d,
+        lightSettings: LIGHT_SETTINGS,
         onHover: this.props.onHover,
         opacity: 1,
         pickable: Boolean(this.props.onHover),
         radius,
-        upperPercentile,
-        material
+        upperPercentile
       })
     ];
   }
@@ -147,7 +127,6 @@ export class App extends Component {
     return (
       <DeckGL
         layers={this._renderLayers()}
-        effects={[lightingEffect]}
         initialViewState={INITIAL_VIEW_STATE}
         viewState={viewState}
         controller={controller}
